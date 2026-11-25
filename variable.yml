@@ -1,0 +1,13 @@
+---
+- name: using variable
+  hosts: all
+  become: true
+  tasks: 
+  - name: creating user
+    user:
+      name: "{{user}}"
+  vars:
+    user: bunny
+    user: yummu
+    user: ammu
+    user: guddi

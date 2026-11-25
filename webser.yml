@@ -1,0 +1,20 @@
+---
+- name: my webserver
+  hosts: all
+  become: true
+  tasks:
+    - name: install httpd pkg
+      yum:
+        name: httpd
+        state: installed
+
+    - name: start services
+      service:
+        name: httpd
+        state: started
+
+    - name: copy file
+      copy:
+        src: /etc/ansible/index.html
+        dest: /var/www/html
+        mode: 0777

@@ -1,0 +1,42 @@
+
+---
+- name: Install Tomcat application
+  hosts: all
+  become: true
+
+  vars:
+    tomcat_version: "10.1.62"
+    tomcat_file: "apache-tomcat-{{ tomcat_version }}.tar.gz"
+    tomcat_url: "https://downloads.apache.org/tomcat/tomcat-10/v{{ tomcat_version }}/bin/{{ tomcat_file }}"
+    tomcat_dir: "/opt/apache-tomcat-{{ tomcat_version }}"
+
+  tasks:
+    - name: Install Java
+      ansible.builtin.yum:
+        name: java
+        state: present
+
+    - name: Download Tomcat
+      ansible.builtin.get_url:
+        url: "{{ tomcat_url }}"
+        dest: "/opt/{{ tomcat_file }}"
+        mode: '0644'
+
+    - name: Extract Tomcat
+      ansible.builtin.unarchive:
+        src: "/opt/{{ tomcat_file }}"
+        dest: /opt
+        remote_src: true
+        creates: "{{ tomcat_dir }}"
+
+    - name: Set permissions
+      ansible.builtin.file:
+        path: "{{ tomcat_dir }}/bin"
+        mode: '0755'
+        recurse: true
+
+    - name: Start Tomcat
+      ansible.builtin.command: ./startup.sh
+      args:
+        chdir: "{{ tomcat_dir }}/bin"
+

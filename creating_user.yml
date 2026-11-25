@@ -1,0 +1,23 @@
+
+---
+- name: create_user
+  hosts: all
+  become: true
+
+  vars:
+    users:
+      - name: prashant
+        password: '$6$HASH_VALUE_FOR_PRASHANT'
+      - name: rahul
+        password: '$6$HASH_VALUE_FOR_RAHUL'
+
+  tasks:
+    - name: Create Linux users
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        state: present
+        create_home: yes
+        groups: wheel
+      loop: "{{ users }}"
+

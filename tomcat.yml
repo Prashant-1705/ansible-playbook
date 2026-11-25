@@ -1,0 +1,36 @@
+
+---
+- name: Install and configure Tomcat application
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install Java
+      ansible.builtin.yum:
+        name: java
+        state: present
+
+    - name: Download Tomcat
+      ansible.builtin.get_url:
+        url: https://downloads.apache.org/tomcat/tomcat-9/v9.0.124/bin/apache-tomcat-9.0.124.tar.gz
+        dest: /opt/apache-tomcat-9.0.124.tar.gz
+        mode: '0644'
+
+    - name: Extract Tomcat
+      ansible.builtin.unarchive:
+        src: /opt/apache-tomcat-9.0.124.tar.gz
+        dest: /opt
+        remote_src: true
+        creates: /opt/apache-tomcat-9.0.124
+
+    - name: Change Tomcat permissions
+      ansible.builtin.file:
+        path: /opt/apache-tomcat-9.0.124/bin
+        mode: '0755'
+        recurse: true
+
+    - name: Start Tomcat
+      ansible.builtin.command: ./startup.sh
+      args:
+        chdir: /opt/apache-tomcat-9.0.124/bin
+
